@@ -17,7 +17,9 @@ import { SystemPrompt } from "./system"
 import { Instruction } from "./instruction"
 import { Plugin } from "../plugin"
 import PROMPT_PLAN from "../session/prompt/plan.txt"
+import PROMPT_EXPLAIN from "../session/prompt/explain.txt"
 import BUILD_SWITCH from "../session/prompt/build-switch.txt"
+import EXPLAIN_SWITCH from "../session/prompt/explain-switch.txt"
 import MAX_STEPS from "../session/prompt/max-steps.txt"
 import { ToolRegistry } from "@/tool/registry"
 import { ToolJsonSchema } from "@/tool/json-schema"
@@ -395,6 +397,16 @@ export const layer = Layer.effect(
             synthetic: true,
           })
         }
+        if (input.agent.name === "explain") {
+          userMessage.parts.push({
+            id: PartID.ascending(),
+            messageID: userMessage.info.id,
+            sessionID: userMessage.info.sessionID,
+            type: "text",
+            text: PROMPT_EXPLAIN,
+            synthetic: true,
+          })
+        }
         const wasPlan = input.messages.some((msg) => msg.info.role === "assistant" && msg.info.agent === "plan")
         if (wasPlan && input.agent.name === "build") {
           userMessage.parts.push({
@@ -403,6 +415,17 @@ export const layer = Layer.effect(
             sessionID: userMessage.info.sessionID,
             type: "text",
             text: BUILD_SWITCH,
+            synthetic: true,
+          })
+        }
+        const wasExplain = input.messages.some((msg) => msg.info.role === "assistant" && msg.info.agent === "explain")
+        if (wasExplain && input.agent.name === "build") {
+          userMessage.parts.push({
+            id: PartID.ascending(),
+            messageID: userMessage.info.id,
+            sessionID: userMessage.info.sessionID,
+            type: "text",
+            text: EXPLAIN_SWITCH,
             synthetic: true,
           })
         }
@@ -423,6 +446,31 @@ export const layer = Layer.effect(
           synthetic: true,
         })
         userMessage.parts.push(part)
+        return input.messages
+      }
+
+      if (input.agent.name !== "explain" && assistantMessage?.info.agent === "explain") {
+        userMessage.parts.push({
+          id: PartID.ascending(),
+          messageID: userMessage.info.id,
+          sessionID: userMessage.info.sessionID,
+          type: "text",
+          text: EXPLAIN_SWITCH,
+          synthetic: true,
+        })
+        return input.messages
+      }
+
+      if (input.agent.name === "explain") {
+        if (assistantMessage?.info.agent === "explain") return input.messages
+        userMessage.parts.push({
+          id: PartID.ascending(),
+          messageID: userMessage.info.id,
+          sessionID: userMessage.info.sessionID,
+          type: "text",
+          text: PROMPT_EXPLAIN,
+          synthetic: true,
+        })
         return input.messages
       }
 

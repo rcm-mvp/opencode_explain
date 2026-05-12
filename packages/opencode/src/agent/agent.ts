@@ -105,6 +105,8 @@ export const layer = Layer.effect(
           question: "deny",
           plan_enter: "deny",
           plan_exit: "deny",
+          explain_enter: "deny",
+          explain_exit: "deny",
           repo_clone: "deny",
           repo_overview: "deny",
           // mirrors github.com/github/gitignore Node.gitignore pattern for .env files
@@ -128,6 +130,7 @@ export const layer = Layer.effect(
               Permission.fromConfig({
                 question: "allow",
                 plan_enter: "allow",
+                explain_enter: "allow",
               }),
               user,
             ),
@@ -143,6 +146,7 @@ export const layer = Layer.effect(
               Permission.fromConfig({
                 question: "allow",
                 plan_exit: "allow",
+                explain_enter: "allow",
                 external_directory: {
                   [path.join(Global.Path.data, "plans", "*")]: "allow",
                 },
@@ -151,6 +155,32 @@ export const layer = Layer.effect(
                   [path.join(".opencode", "plans", "*.md")]: "allow",
                   [path.relative(ctx.worktree, path.join(Global.Path.data, path.join("plans", "*.md")))]: "allow",
                 },
+              }),
+              user,
+            ),
+            mode: "primary",
+            native: true,
+          },
+          explain: {
+            name: "explain",
+            description: "Explain mode. Read-only agent for answering questions about the codebase.",
+            options: {},
+            color: "success",
+            permission: Permission.merge(
+              defaults,
+              Permission.fromConfig({
+                question: "allow",
+                explain_exit: "allow",
+                edit: {
+                  "*": "deny",
+                },
+                bash: {
+                  "*": "deny",
+                },
+                write: "deny",
+                todowrite: "deny",
+                repo_clone: "deny",
+                repo_overview: "deny",
               }),
               user,
             ),

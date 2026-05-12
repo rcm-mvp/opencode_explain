@@ -351,6 +351,16 @@ export const RunCommand = effectCmd({
               action: "deny",
               pattern: "*",
             },
+            {
+              permission: "explain_enter",
+              action: "deny",
+              pattern: "*",
+            },
+            {
+              permission: "explain_exit",
+              action: "deny",
+              pattern: "*",
+            },
           ]
 
       function title() {

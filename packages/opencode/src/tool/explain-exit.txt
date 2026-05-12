@@ -1,0 +1,13 @@
+Use this tool when you have finished answering the user's questions about the codebase and are ready to exit explain agent.
+
+This tool will ask the user if they want to switch to build agent to start making changes.
+
+Call this tool:
+- After you have thoroughly answered the user's questions
+- When the user indicates they want to make changes to the codebase
+- When you believe the user understands the code and may want to take action
+
+Do NOT call this tool:
+- Before you have fully answered the user's questions
+- If the user still has follow-up questions about the codebase
+- If the user has indicated they want to continue asking questions
